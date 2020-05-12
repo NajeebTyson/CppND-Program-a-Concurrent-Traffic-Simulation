@@ -15,6 +15,9 @@ void MessageQueue::send(TrafficLightPhase &&lightPhase)
 {
     // FP.4a : The method send should use the mechanisms std::lock_guard<std::mutex>
     // as well as _condition.notify_one() to add a new message to the queue and afterwards send a notification.
+    std::lock_guard<std::mutex> lck(_mutex);
+    _queue.emplace_back(lightPhase);
+    _condition.notify_one();
 }
 
 /* Implementation of class "TrafficLight" */
@@ -66,5 +69,6 @@ void TrafficLight::cycleThroughPhases()
         }
         uLock.unlock();
         // TODO: send an update method to message queue
+        _message_queue.send(std::move(_currentPhase));
     }
 }
