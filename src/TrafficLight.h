@@ -20,12 +20,17 @@ enum class TrafficLightPhase {
 // Also, the class should define an std::dequeue called _queue, which stores objects of type TrafficLightPhase. 
 // Also, there should be an std::condition_variable as well as an std::mutex as private members. 
 
-template <class T>
 class MessageQueue
 {
 public:
+    void send(TrafficLightPhase &&lightPhase);
+
+    TrafficLightPhase receive();
 
 private:
+    std::mutex _mutex;
+    std::condition_variable _condition;
+    std::deque<TrafficLightPhase> _queue;
     
 };
 
