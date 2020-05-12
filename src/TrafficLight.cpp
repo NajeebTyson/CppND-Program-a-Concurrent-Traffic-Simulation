@@ -72,14 +72,12 @@ void TrafficLight::cycleThroughPhases()
         // TODO: change the 4 seconds to random number between 4 and 6
         std::this_thread::sleep_for(std::chrono::seconds(4));
         uLock.lock();
-
-        if (_currentPhase == TrafficLightPhase::green) {
-            _currentPhase = TrafficLightPhase::red;
-        } else {
-            _currentPhase = TrafficLightPhase::green;
+        TrafficLightPhase update_phase = TrafficLightPhase::red;
+        if (_currentPhase == TrafficLightPhase::red) {
+            update_phase = TrafficLightPhase::green;
         }
+        _currentPhase = update_phase;
         uLock.unlock();
-        // TODO: send an update method to message queue
-        _message_queue.send(std::move(_currentPhase));
+        _message_queue.send(std::move(update_phase));
     }
 }
