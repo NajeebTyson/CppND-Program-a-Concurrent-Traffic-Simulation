@@ -28,7 +28,7 @@ void Vehicle::simulate()
     threads.emplace_back(std::thread(&Vehicle::drive, this));
 }
 
-// virtual function which is executed in a thread
+[[noreturn]] // virtual function which is executed in a thread
 void Vehicle::drive()
 {
     // print id of the current thread

@@ -24,7 +24,7 @@ public:
     std::shared_ptr<Vehicle> get_shared_this() { return shared_from_this(); }
 
 private:
-    // typical behaviour methods
+    [[noreturn]] // typical behaviour methods
     void drive();
 
     std::shared_ptr<Street> _currStreet;            // street on which the vehicle is currently on
