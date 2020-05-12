@@ -26,7 +26,9 @@ void MessageQueue::send(TrafficLightPhase &&lightPhase)
 }
 
 /* Implementation of class "TrafficLight" */
-
+// initializing static variables
+std::random_device TrafficLight::_rd;
+std::mt19937 TrafficLight::_eng(_rd());
 
 TrafficLight::TrafficLight()
 {
@@ -69,8 +71,7 @@ void TrafficLight::cycleThroughPhases()
     std::unique_lock<std::mutex> uLock(_mutex);
     uLock.unlock();
     while (true) {
-        // TODO: change the 4 seconds to random number between 4 and 6
-        std::this_thread::sleep_for(std::chrono::seconds(4));
+        std::this_thread::sleep_for(std::chrono::seconds(getRandomNumber(4, 6)));
         uLock.lock();
         TrafficLightPhase update_phase = TrafficLightPhase::red;
         if (_currentPhase == TrafficLightPhase::red) {
@@ -80,4 +81,9 @@ void TrafficLight::cycleThroughPhases()
         uLock.unlock();
         _message_queue.send(std::move(update_phase));
     }
+}
+
+int TrafficLight::getRandomNumber(int start, int last) {
+    std::uniform_int_distribution<> distr(start, last);
+    return distr(_eng);
 }
