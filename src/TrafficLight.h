@@ -53,7 +53,7 @@ public:
     std::shared_ptr<TrafficLight> get_shared_this() { return shared_from_this(); }
 
 private:
-    // typical behaviour methods
+    [[noreturn]] // typical behaviour methods
     void cycleThroughPhases();
 
     // FP.4b : create a private member of type MessageQueue for messages of type TrafficLightPhase 

@@ -38,19 +38,37 @@ void TrafficLight::waitForGreen()
 
 TrafficLightPhase TrafficLight::getCurrentPhase()
 {
+    std::lock_guard<std::mutex> lck(_mutex);
     return _currentPhase;
 }
 
 void TrafficLight::simulate()
 {
-    // FP.2b : Finally, the private method „cycleThroughPhases“ should be started in a thread when the public method „simulate“ is called. To do this, use the thread queue in the base class. 
+    // FP.2b : Finally, the private method „cycleThroughPhases“ should be started in a thread when the public method „simulate“ is called.
+    // To do this, use the thread queue in the base class.
+    threads.emplace_back(std::thread(&TrafficLight::cycleThroughPhases, this));
 }
 
-// virtual function which is executed in a thread
+[[noreturn]] // virtual function which is executed in a thread
 void TrafficLight::cycleThroughPhases()
 {
     // FP.2a : Implement the function with an infinite loop that measures the time between two loop cycles 
     // and toggles the current phase of the traffic light between red and green and sends an update method 
     // to the message queue using move semantics. The cycle duration should be a random value between 4 and 6 seconds. 
-    // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles. 
+    // Also, the while-loop should use std::this_thread::sleep_for to wait 1ms between two cycles.
+    std::unique_lock<std::mutex> uLock(_mutex);
+    uLock.unlock();
+    while (true) {
+        // TODO: change the 4 seconds to random number between 4 and 6
+        std::this_thread::sleep_for(std::chrono::seconds(4));
+        uLock.lock();
+
+        if (_currentPhase == TrafficLightPhase::green) {
+            _currentPhase = TrafficLightPhase::red;
+        } else {
+            _currentPhase = TrafficLightPhase::green;
+        }
+        uLock.unlock();
+        // TODO: send an update method to message queue
+    }
 }
